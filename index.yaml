@@ -3,10 +3,14 @@ entries:
   gitlab-runner:
   - apiVersion: v2
     appVersion: "1"
-    created: "2025-03-27T11:12:11.1452061+01:00"
+    created: "2025-03-27T14:54:53.6081086+01:00"
+    dependencies:
+    - name: library-chart
+      repository: https://inseefrlab.github.io/helm-charts-interactive-services
+      version: 1.6.8
     description: GitLab Runner run builds on a Kubernetes cluster with the use of
       the Kubernetes executor to create a Pod for each GitLab CI Job.
-    digest: da0081e3d4520dba2b7193e58dcc9b189b5d3e64a35dbd8e9f2610d907f6e291
+    digest: 7589d9d3ffe3a789c73940a80ef6c239f3a16ae46445f43578c15347bcc79e31
     home: https://harbor.lab.incubateur.finances.rie.gouv.fr/chartrepo/automation/gitlab-runner
     icon: https://nubonyxia.incubateur.finances.rie.gouv.fr/statics/icons/gitlab-runner.png
     keywords:
@@ -23,4 +27,4 @@ entries:
     urls:
     - gitlab-runner-0.3.tgz
     version: "0.3"
-generated: "2025-03-27T11:12:11.1431187+01:00"
+generated: "2025-03-27T14:54:53.6065805+01:00"
