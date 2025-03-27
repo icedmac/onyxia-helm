@@ -1,0 +1,26 @@
+apiVersion: v1
+entries:
+  gitlab-runner:
+  - apiVersion: v2
+    appVersion: "1"
+    created: "2025-03-27T11:12:11.1452061+01:00"
+    description: GitLab Runner run builds on a Kubernetes cluster with the use of
+      the Kubernetes executor to create a Pod for each GitLab CI Job.
+    digest: da0081e3d4520dba2b7193e58dcc9b189b5d3e64a35dbd8e9f2610d907f6e291
+    home: https://harbor.lab.incubateur.finances.rie.gouv.fr/chartrepo/automation/gitlab-runner
+    icon: https://nubonyxia.incubateur.finances.rie.gouv.fr/statics/icons/gitlab-runner.png
+    keywords:
+    - git
+    - ci
+    - deploy
+    name: gitlab-runner
+    sources:
+    - https://forge.dgfip.finances.rie.gouv.fr/bercyhub/nubonyxia/nubonyxia_services/-/tree/master/automation/gitlab-runner
+    - https://gitlab.com/gitlab-org/charts/gitlab-runner
+    - https://gitlab.com/gitlab-org/gitlab-runner
+    - https://docs.gitlab.com/runner/
+    type: application
+    urls:
+    - gitlab-runner-0.3.tgz
+    version: "0.3"
+generated: "2025-03-27T11:12:11.1431187+01:00"

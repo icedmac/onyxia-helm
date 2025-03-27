@@ -1,0 +1,148 @@
+{
+  "schema": "http://json-schema.org/schema#",
+  "type": "object",
+
+  "properties": {
+    "authentification": {
+      "type": "object",
+      "form": true,
+      "title": "GitLab runners Authentification",
+      "properties": {
+        "gitlabUrl": {
+          "type": "string",
+          "form": true,
+          "title": "GitLab server URL",
+          "default": "https://forge.dgfip.finances.rie.gouv.fr/"
+        },
+        "token": {
+          "type": "string",
+          "form": true,
+          "title": "Authentification token",
+          "x-form": {
+            "value": ""
+          }
+        }
+      }
+    },
+    "cache": {
+      "description": "S3 cache type configuration",
+      "type": "object",
+      "properties": {
+        "enabled": {
+          "type": "boolean",
+          "description": "Enable pipeline cache",
+          "default": true
+        },
+        "bucket": {
+          "type": "string",
+          "description": "Bucket name used as cache storage",
+          "hidden": {
+            "value": false,
+            "path": "cache/enabled"
+          },
+          "x-form": {
+            "value": "{{s3.AWS_BUCKET_NAME}}"
+          },
+          "x-onyxia": {
+              "overwriteDefaultWith": "{{s3.AWS_BUCKET_NAME}}"
+          }
+        },
+        "endpoint": {
+          "description": "S3 Endpoint",
+          "type": "string",
+          "x-form": {
+            "value": "{{s3.AWS_S3_ENDPOINT}}"
+          },
+          "x-onyxia": {
+            "overwriteDefaultWith": "{{s3.AWS_S3_ENDPOINT}}"
+          },
+          "hidden": {
+            "value": false,
+            "path": "cache/enabled"
+          }
+        },
+        "location": {
+          "description": "Bucket location",
+          "type": "string",
+          "x-form": {
+            "value": "{{s3.AWS_DEFAULT_REGION}}"
+          },
+          "x-onyxia": {
+            "overwriteDefaultWith": "{{s3.AWS_DEFAULT_REGION}}"
+          },
+          "hidden": {
+            "value": false,
+            "path": "cache/enabled"
+          }
+        },
+        "accessKey": {
+          "description": "Access Key",
+          "type": "string",
+          "x-form": {
+            "value": ""
+          },
+          "hidden": {
+            "value": false,
+            "path": "cache/enabled"
+          }
+        },
+        "secretKey": {
+          "description": "S3 secret key",
+          "type": "string",
+          "x-form": {
+            "value": ""
+          },
+          "hidden": {
+            "value": false,
+            "path": "cache/enabled"
+          }
+        }
+      }
+    },
+    "persistence": {
+      "description": "Configuration for artifacts persistence",
+      "type": "object",
+      "form": true,
+      "properties": {
+        "size": {
+          "type": "string",
+          "title": "Persistent volume size",
+          "description": "Size of the persistent volume",
+          "default": "5Gi",
+          "form": true,
+          "render": "slider",
+          "sliderMin": 1,
+          "sliderMax": 10,
+          "sliderStep": 1,
+          "sliderUnit": "Gi"                
+        }
+      }
+    },
+    "tolerations": {
+        "type": "array",
+        "description": "Array of tolerations",
+        "default": [],
+        "x-form": {
+            "hidden": true,
+            "value": "{{region.tolerations}}"
+        },
+        "x-onyxia": {
+            "hidden": true,
+            "overwriteDefaultWith": "region.tolerations"
+        }
+    },
+    "nodeSelector": {
+        "type": "object",
+        "description": "NodeSelector",
+        "default": {},
+        "x-form": {
+            "hidden": true,
+            "value": "{{region.nodeSelector}}"
+        },
+        "x-onyxia": {
+            "hidden": true,
+            "overwriteDefaultWith": "region.nodeSelector"
+        }
+    }
+  }
+}

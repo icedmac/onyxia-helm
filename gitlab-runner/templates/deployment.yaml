@@ -1,0 +1,141 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: {{ include "gitlab-runner.fullname" . }}
+  namespace: {{ default .Release.Namespace }}
+  labels:
+    app: {{ default .Chart.Name }}
+    chart: {{ include "gitlab-runner.chart" . }}
+    release: "{{ .Release.Name }}"
+    heritage: "{{ .Release.Service }}"
+spec:
+  replicas: 1
+  revisionHistoryLimit: 10
+  selector:
+    matchLabels:
+      app: {{ default .Chart.Name }}
+      chart: {{ include "gitlab-runner.chart" . }}
+  template:
+    metadata:
+      labels:
+        app: {{ default .Chart.Name }}
+        chart: {{ include "gitlab-runner.chart" . }}
+        release: {{ include "gitlab-runner.chart" . }}
+        heritage: "{{ .Release.Service }}"
+    spec:
+      securityContext: 
+        fsGroup: 65533
+        runAsUser: 100
+      terminationGracePeriodSeconds: 3600
+      serviceAccountName: {{ include "gitlab-runner.fullname" . }}
+      containers:
+      - name: {{ include "gitlab-runner.fullname" . }}
+        image: "{{ .Values.runner.images.registry }}/{{ .Values.runner.images.runner }}:{{ .Values.runner.images.version }}"
+        imagePullPolicy: "IfNotPresent"
+        securityContext: 
+          allowPrivilegeEscalation: false
+          capabilities:
+            drop:
+            - ALL
+          privileged: false
+          readOnlyRootFilesystem: false
+          runAsNonRoot: true
+        lifecycle:
+          preStop:
+            exec:
+              command: ["/entrypoint", "unregister", "--all-runners"]
+        command: ["/bin/bash", "/configmaps/entrypoint"]
+        env:
+        - name: CI_SERVER_URL
+          value: "{{ .Values.registration.gitlabUrl }}"
+        - name: CLONE_URL
+          value: ""
+        - name: RUNNER_EXECUTOR
+          value: "kubernetes"
+        - name: REGISTER_LOCKED
+          value: "true"
+        - name: RUNNER_TAG_LIST
+          value: "{{ .Values.runner.tags }}"
+        livenessProbe:
+          exec:
+            command: ["/bin/bash", "/configmaps/check-live"]
+          initialDelaySeconds: 60
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        readinessProbe:
+          exec:
+            command: ["/usr/bin/pgrep","gitlab.*runner"]
+          initialDelaySeconds: 10
+          timeoutSeconds: 1
+          periodSeconds: 10
+          successThreshold: 1
+          failureThreshold: 3
+        ports:
+        - name: "metrics"
+          containerPort: 9252
+        volumeMounts:
+        - name: projected-secrets
+          mountPath: /secrets
+        - name: etc-gitlab-runner
+          mountPath: /home/gitlab-runner/.gitlab-runner
+        - name: configmaps
+          mountPath: /configmaps
+        - name: custom-certs
+          readOnly: true
+          mountPath: /home/gitlab-runner/.gitlab-runner/certs/
+        - name: artifacts
+          mountPath: /artifacts
+        resources:
+          {}
+      volumes:
+      - name: runner-secrets
+        emptyDir:
+          medium: "Memory"
+      - name: etc-gitlab-runner
+        emptyDir:
+          medium: "Memory"
+      - name: projected-secrets
+        projected:
+          sources:
+          {{- if .Values.cache.enabled }}
+            - secret:
+                name: {{ include "gitlab-runner.secret.cache" . }}
+          {{ end }}
+            - secret:
+                name: {{ include "gitlab-runner.secret" . }}
+                items:
+                  - key: runner-registration-token
+                    path: runner-registration-token
+                  - key: runner-token
+                    path: runner-token
+      - name: custom-certs
+        secret:
+          secretName: {{ include "gitlab-runner.secret.certs" . }}
+      - name: configmaps
+        configMap:
+          name: {{ include "gitlab-runner.secret" . }}
+      - name: artifacts
+        persistentVolumeClaim:
+          claimName: {{ include "gitlab-runner.fullname" . }}
+    {{- if .Values.imagePullSecrets }}
+      imagePullSecrets:
+{{ toYaml .Values.imagePullSecrets | indent 8 }}
+    {{- end }}
+    {{- if .Values.affinity }}
+      affinity:
+{{ toYaml .Values.affinity | indent 8 }}
+    {{- end }}
+    {{- if .Values.nodeSelector }}
+      nodeSelector:
+{{ toYaml .Values.nodeSelector | indent 8 }}
+    {{- end }}
+    {{- if .Values.tolerations }}
+      tolerations:
+{{ toYaml .Values.tolerations | indent 8 }}
+    {{- end }}
+    {{- if .Values.hostAliases }}
+      hostAliases:
+{{ toYaml .Values.hostAliases | indent 8 }}
+    {{- end }}

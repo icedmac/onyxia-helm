@@ -1,0 +1,5 @@
+
+A GitLab Runner is supposed to be registred on your GitLab server: 
+- [{{ .Values.registration.gitlabUrl }}]({{ .Values.registration.gitlabUrl }})
+
+Please check **Settings, CI/CD, Runners** on your GitLab project
