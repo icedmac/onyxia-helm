@@ -143,6 +143,43 @@
             "hidden": true,
             "overwriteDefaultWith": "region.nodeSelector"
         }
+    },
+    "security": {
+      "description": "security specific configuration",
+      "type": "object",
+      "properties": {
+        "networkPolicy": {
+          "type": "object",
+          "description": "Define access policy to the service",
+          "x-onyxia": {
+            "overwriteSchemaWith": "network-policy.json"
+          },
+          "properties": {
+            "enabled": {
+              "type": "boolean",
+              "title": "Enable network policy",
+              "description": "Only pod from the same namespace will be allowed",
+              "default": false,
+              "x-onyxia": {
+                "overwriteDefaultWith": "region.defaultNetworkPolicy"
+              }
+            },
+            "from": {
+              "description": "Array of sources allowed to have network access to your service",
+              "type": "array",
+              "items": {
+                "type": "object",
+                "additionalProperties": true
+              },
+              "default": [],
+              "x-onyxia": {
+                "hidden": true,
+                "overwriteDefaultWith": "region.from"
+              }
+            }
+          }
+        }
+      }
     }
   }
 }
